@@ -12,16 +12,19 @@ import javafx.scene.text.Font;
 
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+
 import java.util.HashMap;
-import java.util.Properties;
+import java.util.HashSet;
+
 
 @SuppressWarnings({"all"})
 public class InvoiceService {
 
-    public static HashMap<Integer,InvoiceData> invoiceList = new HashMap<>();
+    public static HashSet<InvoiceData> invoiceList = new HashSet<>();
 
     public static int num = 0;
+
+    static InvoiceInterface invoiceInterface = InvoiceInterface.getInstance();
 
     /**
      * 此函数设置显示的HBox布局
@@ -73,17 +76,17 @@ public class InvoiceService {
      */
     public void ChangeInvoice(InvoiceData invoiceData){
 
-        invoiceData.setDate(InvoiceInterface.dp.getValue());
-        invoiceData.setInvoice_kind(InvoiceInterface.cb.getValue());
-        invoiceData.setInvoice_num(InvoiceInterface.textFields[0].getText());
-        invoiceData.setInvoice_code(InvoiceInterface.textFields[1].getText());
-        invoiceData.setInvoice_amount(InvoiceInterface.textFields[2].getText());
-        invoiceData.setPurchaser_name(InvoiceInterface.textFields[5].getText());
-        invoiceData.setSell_name(InvoiceInterface.textFields[6].getText());
-        invoiceData.setTax_rate(InvoiceInterface.textFields[7].getText());
-        invoiceData.setTax_amount(InvoiceInterface.textFields[8].getText());
-        invoiceData.setPrice_tax(InvoiceInterface.textFields[9].getText());
-        invoiceData.setRemarks(InvoiceInterface.textFields[10].getText());
+        invoiceData.setDate(invoiceInterface.dp.getValue());
+        invoiceData.setInvoice_kind(invoiceInterface.cb.getValue());
+        invoiceData.setInvoice_num(invoiceInterface.textFields[0].getText());
+        invoiceData.setInvoice_code(invoiceInterface.textFields[1].getText());
+        invoiceData.setInvoice_amount(invoiceInterface.textFields[2].getText());
+        invoiceData.setPurchaser_name(invoiceInterface.textFields[5].getText());
+        invoiceData.setSell_name(invoiceInterface.textFields[6].getText());
+        invoiceData.setTax_rate(invoiceInterface.textFields[7].getText());
+        invoiceData.setTax_amount(invoiceInterface.textFields[8].getText());
+        invoiceData.setPrice_tax(invoiceInterface.textFields[9].getText());
+        invoiceData.setRemarks(invoiceInterface.textFields[10].getText());
 
         MyHBoxUpdate(invoiceData.getMyHBox());
     }
@@ -119,9 +122,8 @@ public class InvoiceService {
                                         tax_rate,tax_amount,price_tax);
 
         try {
-            invoiceList.put(++num,invoiceData);
+            invoiceList.add(invoiceData);
             MainInterface.listData.add(HBoxSet(invoiceData));
-//            Utility.saveData();
 
         }catch (NullPointerException e){
             e.printStackTrace();
@@ -129,6 +131,15 @@ public class InvoiceService {
             clear();
         }
     }
+
+    public void DeleteInvoice(MyHBox myHBox){
+
+        MainInterface.listData.remove(myHBox);
+        invoiceList.remove(myHBox.getInvoiceData());
+
+    }
+
+
 
     public void clear(){
         AddInterface.dp.setValue(null);

@@ -2,10 +2,12 @@ package com.piaoletnew.domain;
 
 import javafx.scene.layout.HBox;
 
-public class MyHBox extends HBox {
+import java.io.Serializable;
+
+public class MyHBox extends HBox implements Serializable {
     private InvoiceData invoiceData;
 
-
+    private static final long serialVersionUID = 10L;
 
     private boolean isShow = true;
 

@@ -15,7 +15,6 @@ import javafx.scene.layout.HBox;
  * 添加发票界面的设计
  */
 public class AddInterface{
-
     /*
     标签和文字框
      */
@@ -24,31 +23,25 @@ public class AddInterface{
                         "销方名称","税    率","税    额",
                         "价税合计","备     注"};
 
-    public static TextField[] textFields = new TextField[9];
-    public static HBox[] hBoxes = new HBox[12];
-    public static Label[] labels = new Label[11];
+    private static AddInterface INSTANCE = null;
 
-    public static Button btn1 = new Button("保存");
+    public static TextField[] textFields = new TextField[9];
+    HBox[] hBoxes = new HBox[12];
+    Label[] labels = new Label[11];
+
+    Button btn1 = new Button("保存");
 
     public static ChoiceBox<String> cb = new ChoiceBox<>(FXCollections.observableArrayList(
             "增值税专用发票", "增值税普通发票", "通用定额发票", "其他"
      ));
 
     public static DatePicker dp = new DatePicker();
-    public static GridPane gridPane = new GridPane();
+    GridPane gridPane = new GridPane();
     public Scene scene;
 
-
-     public void init(){
-         for (int i = 0;i<labels.length;i++)
-             labels[i] = new Label(strings[i]);
-
-         for (int i = 0;i<textFields.length;i++)
-             textFields[i] = new TextField();
-
-         for (int i = 0;i<hBoxes.length;i++)
-             hBoxes[i] = new HBox();
-     }
+    private AddInterface(){
+        start();
+    }
 
     /**
      * 设置空间布局及其属性
@@ -99,4 +92,22 @@ public class AddInterface{
             }
         });
     }
+
+    public void init(){
+        for (int i = 0;i<labels.length;i++)
+            labels[i] = new Label(strings[i]);
+
+        for (int i = 0;i<textFields.length;i++)
+            textFields[i] = new TextField();
+
+        for (int i = 0;i<hBoxes.length;i++)
+            hBoxes[i] = new HBox();
+    }
+
+    public static AddInterface getInstance(){
+        if (INSTANCE == null)
+            INSTANCE = new AddInterface();
+        return INSTANCE;
+    }
+
 }

@@ -11,6 +11,8 @@ public class InvoiceData implements Serializable {
     public static final String GENERAL_QUOTA;
     public static final String OTHER;
 
+    private static final long serialVersionUID = 1L;
+
     private String invoice_num,invoice_code,invoice_kind,
                     invoice_amount,purchaser_name,sell_name,
                     tax_rate,tax_amount,price_tax,remarks;
@@ -155,6 +157,11 @@ public class InvoiceData implements Serializable {
         this.myHBox = myHBox;
     }
 
-
+    @Override
+    public String toString() {
+        return "InvoiceData{" +
+                "invoice_kind='" + invoice_kind + '\'' +
+                '}';
+    }
 }
 

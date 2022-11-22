@@ -2,29 +2,33 @@ package com.piaoletnew.utils;
 
 import com.piaoletnew.domain.InvoiceData;
 import com.piaoletnew.service.InvoiceService;
-import com.piaoletnew.view.InvoiceInterface;
+import com.piaoletnew.view.MainInterface;
 
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.HashMap;
+
+import java.io.*;
+
 import java.util.Iterator;
 import java.util.Map;
-
+import java.util.Set;
 
 
 public class Utility {
 
-    static HashMap hashMap;
-    static String filePath = "e:\\data.properties";
-    static FileOutputStream fos = null;
+    static String filePath = "e:\\data.dat";
+
+    static File file = new File(filePath);
 
     public static void saveData() {
+        FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(filePath,true);
+            if(!file.exists())
+                file.createNewFile();
+
+            fos = new FileOutputStream(filePath);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
-//            Map<Integer,InvoiceData> map = InvoiceService.invoiceList.e();
+            for (InvoiceData invoiceData : InvoiceService.invoiceList) {
+                oos.writeObject(invoiceData);
+            }
 
         }catch (IOException e){
             e.printStackTrace();
@@ -37,4 +41,34 @@ public class Utility {
             }
         }
     }
+
+    public static void loadData() throws ClassCastException {
+        Object obj = null;
+        FileInputStream fis = null;
+        InvoiceService invoiceData = new InvoiceService();
+        try {
+            fis = new FileInputStream(filePath);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+//            System.out.println(ois.readObject());
+
+            while ((obj = ois.readObject()) != null) {
+                InvoiceService.invoiceList.add((InvoiceData)obj);
+                MainInterface.listData.add(invoiceData.HBoxSet((InvoiceData) obj));
+//                System.out.println(obj);
+            }
+        }catch (EOFException e){
+            System.out.println("数据加载完成");
+        }catch (ClassNotFoundException|IOException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                if(fis!=null)
+                    fis.close();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 }

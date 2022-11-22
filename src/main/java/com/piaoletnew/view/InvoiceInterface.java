@@ -15,6 +15,8 @@ import javafx.scene.text.Font;
 
 public class InvoiceInterface {
 
+    private static InvoiceInterface INSTANCE = null;
+
     Label[] labels = new Label[11];
     String[] strings = {"发票号码:\t","发票代码:\t","发票金额:\t",
                         "发票日期:\t","发票类型:\t","购方名称:\t",
@@ -25,14 +27,19 @@ public class InvoiceInterface {
     Button btn1 = new Button("修改");
     HBox[] hBoxes = new HBox[11];
     VBox vb =new VBox();
-    public static DatePicker dp = new DatePicker();
-    public static ChoiceBox<String> cb = new ChoiceBox<>(FXCollections.observableArrayList(
+    public DatePicker dp = new DatePicker();
+    public ChoiceBox<String> cb = new ChoiceBox<>(FXCollections.observableArrayList(
             "增值税专用发票", "增值税普通发票", "通用定额发票", "其他"
     ));
-    public Scene scene;
 
-    InvoiceData invoiceData;
-    InvoiceService invoiceService = new InvoiceService();
+    Scene scene;
+    static InvoiceData invoiceData;
+    static InvoiceService invoiceService = new InvoiceService();
+
+
+    private InvoiceInterface(){
+        start();
+    }
 
     public void start(){
         Set();
@@ -109,5 +116,12 @@ public class InvoiceInterface {
         vb.getChildren().add(btn1);
         vb.setSpacing(10);
         vb.setPadding(new Insets(10));
+    }
+
+    public static InvoiceInterface getInstance(){
+        if (INSTANCE == null) {
+            INSTANCE = new InvoiceInterface();
+        }
+        return INSTANCE;
     }
 }

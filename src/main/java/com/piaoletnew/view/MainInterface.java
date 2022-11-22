@@ -1,6 +1,8 @@
 package com.piaoletnew.view;
 
 import com.piaoletnew.domain.MyHBox;
+import com.piaoletnew.service.InvoiceService;
+import com.piaoletnew.utils.Utility;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -8,16 +10,20 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
 import java.time.LocalDate;
@@ -27,7 +33,7 @@ public class MainInterface extends Application {
 
     public static ObservableList<MyHBox> listData = FXCollections.observableArrayList();
 
-    ListView<MyHBox> listView = new ListView<>();
+    static ListView<MyHBox> listView = new ListView<>();
 
     public static DatePicker dp = new DatePicker();
 
@@ -42,22 +48,21 @@ public class MainInterface extends Application {
     Stage stage1 = new Stage();
     Stage stage2 = new Stage();
 
-    InvoiceInterface invoiceInterface = new InvoiceInterface();
-    AddInterface addInterface = new AddInterface();
+    static InvoiceInterface invoiceInterface = InvoiceInterface.getInstance();
+    static AddInterface addInterface = AddInterface.getInstance();
+    static InvoiceService invoiceService = new InvoiceService();
+    static AlertBox alertBox = AlertBox.getInstance();
 
     public static void main(String[] args) {
+
         launch(args);
     }
-
 
     @Override
     public void start(Stage stage) throws Exception {
         Scene scene = new Scene(root,600,610);
-        invoiceInterface.start();
-        addInterface.start();
         stage.setTitle("发票管理系统");
         listView.setItems(listData);
-
 
         SceneSet(stage);
 
@@ -77,6 +82,7 @@ public class MainInterface extends Application {
             }
         });
 
+
         textField.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -86,18 +92,44 @@ public class MainInterface extends Application {
         });
 
         listView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+
             @Override
             public void handle(MouseEvent mouseEvent) {
-                if(mouseEvent.getClickCount()==2){
-                    invoiceInterface.showInfo(listView.getSelectionModel().getSelectedItem());//有问题
+                GlobalMenu gm = GlobalMenu.getInstance();
+                if((mouseEvent.getButton()== MouseButton.SECONDARY)&&(mouseEvent.getClickCount()==1)){
+                    Node node = mouseEvent.getPickResult().getIntersectedNode();
+                    GlobalMenu.getInstance().show(node, Side.RIGHT, 0, 0);
+                    gm.getDeleteMenuItem().setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent event) {
+                            alertBox.display("是否删除？");
+                            invoiceService.DeleteInvoice(listView.getSelectionModel().getSelectedItem());
+                        }
+                    });
+
+                }
+
+                if((mouseEvent.getButton()== MouseButton.PRIMARY)&&(mouseEvent.getClickCount()==2)){
+                    invoiceInterface.showInfo(listView.getSelectionModel().getSelectedItem());//
                     stage2.setScene(invoiceInterface.scene);
                     stage2.show();
                 }
             }
         });
 
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent windowEvent) {
+                if (windowEvent.getEventType() == WindowEvent.WINDOW_CLOSE_REQUEST)
+                    Utility.saveData();
+            }
+        });
+
         stage.setScene(scene);
+        Utility.loadData();
         stage.show();
+
     }
 
     /**
